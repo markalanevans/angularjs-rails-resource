@@ -285,6 +285,26 @@ RailsResources have the following class methods available.
     * **path** {string} (optional) - A path to append to the resource's URL.
     * **returns** {string} - The resource URL
 
+* $extendUrl(context, path) - Appends the path if provied, then applies context to url. Does not modify Resource url.
+    * **context** {*} - The context to use when building the url.  See [Resource URLs](#resource-urls) above for more information.
+    * **path** {string} (optional) - A path to append to the resource's URL.
+    * **returns** {string} - The resource URL
+###### Ex:
+```
+angular.module("app.models").factory  "User", [ 'RailsResource',( RailsResource ) ->
+  class User extends RailsResource
+    @configure url: '/users', name: "users"
+
+    constructor: ->
+
+    @byPlatformId: ( data ) ->
+      url = @$extendUrl(data, '/{{id}}/platform/{{platform_id}}')
+      ## if data = {id: 23, platform_id:159}
+      ## url will be: /users/23/platform/159
+      return @$get(url)
+]
+
+```
 * query(queryParams, context) - Executes a GET request against the resource's base url (e.g. /books).
     * **query params** {object} (optional) - An map of strings or objects that are passed to $http to be turned into query parameters
     * **context** {*} (optional) - A context object that is used during url evaluation to resolve expression variables
