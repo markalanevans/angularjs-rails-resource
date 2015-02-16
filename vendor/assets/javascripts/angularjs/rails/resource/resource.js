@@ -678,6 +678,39 @@
 
                     return appendPath(this.buildUrl(context || {}), path);
                 };
+                
+                /**
+                 * Allows you append a path to the resource url, and then have the context data interpolated.
+                 * 
+                 * Ex: 
+                 * If the resource url is   /users and you want to know the platform products that this users owns.
+                 * The url would be /users/23/platforms/159/products
+                 * So the pattern would be: /users/{{id}}/platforms/{{platform_id}}/products
+                 *  
+                 * ```
+                 *  data = { id: 23, platform_id : 159}
+                 *  url = $extendUrl(data, "/platforms/{{platform_id}}/products")
+                 * ``` 
+                 *  url would now equal: /users/23/platforms/159/products
+                 *  
+                 *  Now you can use that url with any of the http methods  $get, $post, $post, $delet (url)
+                 * @param context
+                 * @param path {string} (optional) An additional path to append to the URL
+                 * @return {string}
+                 */
+                RailsResource.$extendUrl = RailsResource.resourceUrl = function (context, path) {
+                    if (!angular.isObject(context)) {
+                        context = {id: context};
+                    }
+
+                    var config = {
+                        url : appendPath(this.$url(), path)
+                    };
+
+                    builder = railsUrlBuilder(config);
+
+                    return builder(context || {});
+                };
 
                 RailsResource.$get = function (url, queryParams) {
                     return this.$http(angular.extend({method: 'get', url: url}, this.getHttpConfig(queryParams)));
